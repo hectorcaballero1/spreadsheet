@@ -1,0 +1,10 @@
+[project]
+name = "hoja-de-calculo"
+version = "0.1.0"
+description = "Add your description here"
+requires-python = ">=3.12"
+dependencies = [
+    "pybind11>=3.0.3",
+    "cmake>=3.17",
+    "textual>=0.60.0",
+]
