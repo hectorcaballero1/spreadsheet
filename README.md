@@ -1,6 +1,6 @@
 # Hoja de Cálculo
 
-Hoja de cálculo de terminal implementada en C++17. Los datos viven en una matriz dispersa con listas enlazadas cruzadas expuesta a Python via pybind11. La interfaz usa Textual.
+Hoja de cálculo de terminal implementada en C++. Los datos viven en una matriz dispersa con listas enlazadas cruzadas expuesta a Python via pybind11.
 
 ## Prerequisitos
 
@@ -86,7 +86,3 @@ Las fórmulas inician con `=` y soportan dos operandos con `+ - * /`. Los operan
 ```
 
 Si una referencia apunta a otra celda con fórmula, se resuelve recursivamente. Si hay un ciclo de dependencias, la celda muestra `#CICLO`.
-
-### CSV
-
-Las fórmulas se guardan como texto (`=A1+B1`) y se reconocen automáticamente al cargar. Los valores numéricos se guardan como números.
