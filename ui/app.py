@@ -152,7 +152,6 @@ class SpreadsheetApp(App):
             self._enter_normal_mode(commit=False)
         elif key == "enter":
             self._enter_normal_mode(commit=True)
-            self.move_cursor(1, 0)
         elif key == "backspace":
             self.input_buffer = self.input_buffer[:-1]
         elif key == "delete":
@@ -229,10 +228,18 @@ class SpreadsheetApp(App):
         if self._fill_range is not None:
             r1, c1, r2, c2 = self._fill_range
             self._fill_range = None
-            for r in range(r1, r2 + 1):
-                for c in range(c1, c2 + 1):
-                    self._write_cell(r, c, text)
-                    self._recompute_col_width(c)
+            coords = [(r, c) for r in range(r1, r2 + 1) for c in range(c1, c2 + 1)]
+            if not text:
+                self.sheet.delete_range(r1, c1, r2, c2)
+            elif text.startswith("="):
+                self.sheet.set_batch_str(coords, text)
+            else:
+                try:    self.sheet.set_batch_int(coords, int(text))
+                except ValueError:
+                    try:    self.sheet.set_batch_float(coords, float(text))
+                    except ValueError: self.sheet.set_batch_str(coords, text)
+            for c in range(c1, c2 + 1):
+                self._recompute_col_width(c)
         else:
             self._write_cell(self.cursor_row, self.cursor_col, text)
             self._recompute_col_width(self.cursor_col)
@@ -319,12 +326,6 @@ class SpreadsheetApp(App):
                 self._load_csv(parts[1])
                 self.filename = parts[1]
                 self.status_message = f"Cargado {parts[1]}"
-        elif verb == "undo":
-            if self.sheet.can_undo(): self.sheet.undo()
-            else: self.status_message = "Nada que deshacer"
-        elif verb == "redo":
-            if self.sheet.can_redo(): self.sheet.redo()
-            else: self.status_message = "Nada que rehacer"
         elif verb == "goto":
             if len(parts) < 2:
                 self.status_message = "Uso: goto A1"
@@ -337,12 +338,6 @@ class SpreadsheetApp(App):
                     self._clamp_scroll()
                 except Exception:
                     self.status_message = f"Referencia inválida: {parts[1]}"
-        elif verb == "delrow":
-            self.sheet.delete_row(self.cursor_row)
-            self.status_message = f"Fila {self.cursor_row + 1} eliminada"
-        elif verb == "delcol":
-            self.sheet.delete_col(self.cursor_col)
-            self.status_message = "Columna eliminada"
         elif verb in ("sum", "avg", "max", "min"):
             self._aggregate(verb, parts[1] if len(parts) > 1 else None)
         else:

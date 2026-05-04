@@ -20,6 +20,9 @@ PYBIND11_MODULE(spreadsheet, m) {
             if (!val) return py::none();
             return std::visit([](auto&& v) -> py::object { return py::cast(v); }, *val);
         })
+        .def("set_batch_int",   [](SparseMatrix& s, const std::vector<std::pair<int,int>>& coords, int v)         { std::vector<std::tuple<int,int,CellValue>> cells; for (auto& [r,c] : coords) cells.emplace_back(r,c,v); s.set_batch(cells); })
+        .def("set_batch_float", [](SparseMatrix& s, const std::vector<std::pair<int,int>>& coords, double v)      { std::vector<std::tuple<int,int,CellValue>> cells; for (auto& [r,c] : coords) cells.emplace_back(r,c,v); s.set_batch(cells); })
+        .def("set_batch_str",   [](SparseMatrix& s, const std::vector<std::pair<int,int>>& coords, std::string v) { std::vector<std::tuple<int,int,CellValue>> cells; for (auto& [r,c] : coords) cells.emplace_back(r,c,v); s.set_batch(cells); })
         .def("clear_cell", &SparseMatrix::clear_cell)
         .def("delete_row", &SparseMatrix::delete_row)
         .def("delete_col", &SparseMatrix::delete_col)

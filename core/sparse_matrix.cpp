@@ -178,6 +178,29 @@ void SparseMatrix::set(int row, int col, CellValue value) {
     insert_cell_in_col(ch, new_cell);
 }
 
+// Guarda un Action con todos los CellChange del batch y aplica cada celda
+void SparseMatrix::set_batch(const std::vector<std::tuple<int, int, CellValue>>& cells) {
+    Action action;
+    for (auto& [row, col, value] : cells) {
+        Cell* existing = find_cell(row, col);
+        action.push_back({row, col, existing ? std::optional<CellValue>{existing->val} : std::nullopt, value});
+    }
+    push_action(action);
+
+    for (auto& [row, col, value] : cells) {
+        Cell* existing = find_cell(row, col);
+        if (existing != nullptr) {
+            existing->val = value;
+        } else {
+            RowHeader* rh = find_or_create_row(row);
+            ColHeader* ch = find_or_create_col(col);
+            Cell* new_cell = new Cell(row, col, value);
+            insert_cell_in_row(rh, new_cell);
+            insert_cell_in_col(ch, new_cell);
+        }
+    }
+}
+
 // Retorna el valor de la celda en (row, col), o nullopt si no existe
 std::optional<CellValue> SparseMatrix::get(int row, int col) const {
     Cell* cell = find_cell(row, col);

@@ -28,7 +28,7 @@ La TUI tiene cuatro modos: NORMAL, INSERT, VISUAL y COMMAND.
 | `G` | Ir a la última celda ocupada de la columna actual |
 | `0` | Ir a la columna 0 |
 | `$` | Ir a la última columna con datos |
-| `i` o `Enter` | Entrar a modo INSERT |
+| `i` | Entrar a modo INSERT |
 | `v` | Entrar a modo VISUAL |
 | `Backspace` / `Delete` | Borrar celda actual |
 | `dd` | Borrar fila actual |
@@ -66,14 +66,10 @@ Selecciona un rango rectangular moviéndote con las flechas desde el punto de an
 | `:wq` | Guardar y salir |
 | `:q` | Salir sin guardar |
 | `:goto A5` | Mover cursor a celda |
-| `:delrow` | Eliminar fila actual |
-| `:delcol` | Eliminar columna actual |
 | `:sum A1:C4` | Suma del rango |
 | `:avg A1:C4` | Promedio del rango |
 | `:max A1:C4` | Máximo del rango |
 | `:min A1:C4` | Mínimo del rango |
-| `:undo` | Deshacer |
-| `:redo` | Rehacer |
 
 ### Fórmulas
 

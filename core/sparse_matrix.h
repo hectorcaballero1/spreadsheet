@@ -63,6 +63,7 @@ class SparseMatrix {
     ~SparseMatrix();
 
     void set(int row, int col, CellValue value);
+    void set_batch(const std::vector<std::tuple<int, int, CellValue>>& cells);
     std::optional<CellValue> get(int row, int col) const;
     void clear_cell(int row, int col);
 
