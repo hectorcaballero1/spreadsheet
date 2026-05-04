@@ -51,12 +51,18 @@ static CellValue resolve_cell(const std::string& token, const SparseMatrix& matr
     if (visited.count({r, c})) return std::string{"#CICLO"};
     visited.insert({r, c});
     auto raw = matrix.get(r, c);
-    if (!raw) return std::string{"#ERROR"};
+    if (!raw) { visited.erase({r, c}); return std::string{"#ERROR"}; }
     if (auto* s = std::get_if<std::string>(&*raw)) {
         bool is_formula = ((*s)[0] == '=');
-        if (is_formula) return eval_helper(*s, matrix, visited);
+        if (is_formula) {
+            auto result = eval_helper(*s, matrix, visited);
+            visited.erase({r, c});
+            return result;
+        }
+        visited.erase({r, c});
         return std::string{"#ERROR"}; // texto plano no es operable
     }
+    visited.erase({r, c});
     return *raw;
 }
 

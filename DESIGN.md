@@ -43,4 +43,4 @@ En comparación, una matriz densa tendría `get`/`set` en O(1) pero ocuparía O(
 
 Las fórmulas se almacenan como strings y se evalúan al momento de mostrarlas (evaluación lazy). Esto evita mantener un grafo de dependencias explícito y recalcular celdas en cascada al modificar un valor.
 
-La detección de ciclos usa un `std::set<CellCoord>` de celdas visitadas en el stack de llamadas actual. Si al resolver una referencia la celda destino ya está en el conjunto, se devuelve `#CICLO` en lugar de entrar en recursión infinita.
+La detección de ciclos usa un `std::set<CellCoord>` que representa el stack de llamadas activo. Al entrar a resolver una celda se inserta su coordenada, y al retornar se elimina (backtracking). Si al resolver una referencia la celda destino ya está en el conjunto, significa que hay un ciclo real y se devuelve `#CICLO`. Esto permite que una celda sea referenciada múltiples veces en una misma fórmula (e.g. `=A1+A1`) sin falsos positivos.
