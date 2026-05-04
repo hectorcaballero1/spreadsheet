@@ -82,8 +82,14 @@ class GridWidget(Widget):
             selected = (data_r == app.cursor_row and col == app.cursor_col)
             in_visual = vr is not None and vr[0] <= data_r <= vr[2] and vr[1] <= col <= vr[3]
 
+            fill = app._fill_range
+            in_fill = (fill is not None and app.mode == app.MODE_INSERT
+                       and fill[0] <= data_r <= fill[2] and fill[1] <= col <= fill[3])
+
             if selected and app.mode == app.MODE_INSERT:
                 segs.append(Segment(_fit(app.input_buffer + "▏", cw), STYLE_SELECTED))
+            elif in_fill:
+                segs.append(Segment(_fit(app.input_buffer, cw), STYLE_VISUAL))
             else:
                 text, style = self._cell_content(data_r, col, app)
                 if selected:

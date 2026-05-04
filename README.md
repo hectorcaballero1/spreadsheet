@@ -36,7 +36,6 @@ La TUI tiene cuatro modos: NORMAL, INSERT, VISUAL y COMMAND.
 | `u` | Deshacer |
 | `Ctrl+R` | Rehacer |
 | `:` | Entrar a modo COMMAND |
-| `q` | Salir |
 
 ### Modo INSERT
 
@@ -54,6 +53,7 @@ Selecciona un rango rectangular moviéndote con las flechas desde el punto de an
 | Tecla | Acción |
 |---|---|
 | Flechas / `h j k l` | Extender selección |
+| `i` | Escribir el mismo valor en todas las celdas del rango |
 | `Backspace` / `Delete` | Borrar rango seleccionado |
 | `Esc` | Cancelar selección |
 

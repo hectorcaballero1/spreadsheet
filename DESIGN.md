@@ -30,7 +30,7 @@ La estructura elegida es una lista enlazada cruzada (cross-linked list):
 | `clear_cell(row, col)` | O(R + k_r) | Igual que get, más actualizar punteros vecinos en O(1) |
 | `delete_row(row)` | O(R + k_r * C) | Encontrar la fila en O(R), borrar cada celda de la fila desenlazándola de su columna en O(C) |
 | `delete_col(col)` | O(C + k_c * R) | Simétrico |
-| `delete_range(r1,c1,r2,c2)` | O((r2-r1) * (c2-c1) * max(R,C)) | Un `clear_cell` por cada celda del rango |
+| `delete_range(r1,c1,r2,c2)` | O((r2-r1) * (c2-c1) * max(R,C)) | Recorre el rango, agrupa todos los cambios en un único `Action` y borra cada celda con `delete_cell_node`. Deshacer el rango completo cuenta como una sola operación de undo. |
 | `for_each` | O(N) | Recorre todos los nodos existentes, N = celdas ocupadas |
 | `undo` / `redo` | O(k) | k = número de cambios en la acción a revertir |
 

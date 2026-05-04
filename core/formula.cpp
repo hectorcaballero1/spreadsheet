@@ -2,6 +2,7 @@
 #include <cctype>
 #include <optional>
 #include <set>
+#include <stdexcept>
 #include <string>
 
 CellCoord parse_cell_id(const std::string& cell_id) {
@@ -11,6 +12,8 @@ CellCoord parse_cell_id(const std::string& cell_id) {
         col = col * 26 + (cell_id[i] - 'A' + 1);
         i++;
     }
+    if (i >= (int)cell_id.size() || !std::isdigit(cell_id[i]))
+        throw std::invalid_argument("invalid cell id: " + cell_id);
     int row = std::stoi(cell_id.substr(i));
     return {row - 1, col - 1};
 }
@@ -41,7 +44,10 @@ static CellValue parse_number(const std::string& token) {
 }
 
 static CellValue resolve_cell(const std::string& token, const SparseMatrix& matrix, std::set<CellCoord>& visited) {
-    auto [r, c] = parse_cell_id(token);
+    CellCoord coord;
+    try { coord = parse_cell_id(token); }
+    catch (...) { return std::string{"#ERROR"}; }
+    auto [r, c] = coord;
     if (visited.count({r, c})) return std::string{"#CICLO"};
     visited.insert({r, c});
     auto raw = matrix.get(r, c);

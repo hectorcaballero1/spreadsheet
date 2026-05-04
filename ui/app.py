@@ -47,6 +47,7 @@ class SpreadsheetApp(App):
         self.col_widths: dict[int, int] = {}
         self.filename: str | None = None
         self.visual_anchor: tuple[int, int] | None = None
+        self._fill_range: tuple[int, int, int, int] | None = None
         self._g_pending = False
         self._d_pending = False
 
@@ -142,7 +143,6 @@ class SpreadsheetApp(App):
             if self.sheet.can_redo(): self.sheet.redo()
             else: self.status_message = "Nada que rehacer"
         elif char == ":": self._enter_command_mode()
-        elif char == "q": self.exit()
 
     def _insert(self, event: events.Key) -> None:
         key  = event.key
@@ -169,6 +169,7 @@ class SpreadsheetApp(App):
         elif char == "k" or key == "up":    self.move_cursor(-1, 0)
         elif char == "j" or key == "down":  self.move_cursor(1, 0)
         elif key in ("backspace", "delete"): self._delete_visual_range()
+        elif char == "i": self._enter_visual_insert()
         elif key == "escape": self._exit_visual_mode()
 
     def _command(self, event: events.Key) -> None:
@@ -215,24 +216,41 @@ class SpreadsheetApp(App):
         self.visual_anchor = None
         self.mode = self.MODE_NORMAL
 
+    def _enter_visual_insert(self) -> None:
+        self._fill_range = self._visual_range()
+        self._exit_visual_mode()
+        self.input_buffer = ""
+        self.mode = self.MODE_INSERT
+
     # ── Edición de celdas ─────────────────────────────────────────────────────
 
     def _commit_input(self) -> None:
         text = self.input_buffer.strip()
+        if self._fill_range is not None:
+            r1, c1, r2, c2 = self._fill_range
+            self._fill_range = None
+            for r in range(r1, r2 + 1):
+                for c in range(c1, c2 + 1):
+                    self._write_cell(r, c, text)
+                    self._recompute_col_width(c)
+        else:
+            self._write_cell(self.cursor_row, self.cursor_col, text)
+            self._recompute_col_width(self.cursor_col)
+
+    def _write_cell(self, row: int, col: int, text: str) -> None:
         if not text:
-            self.sheet.clear_cell(self.cursor_row, self.cursor_col)
+            self.sheet.clear_cell(row, col)
             return
         if text.startswith("="):
-            self.sheet.set_str(self.cursor_row, self.cursor_col, text)
+            self.sheet.set_str(row, col, text)
         else:
             try:
-                self.sheet.set_int(self.cursor_row, self.cursor_col, int(text))
+                self.sheet.set_int(row, col, int(text))
             except ValueError:
                 try:
-                    self.sheet.set_float(self.cursor_row, self.cursor_col, float(text))
+                    self.sheet.set_float(row, col, float(text))
                 except ValueError:
-                    self.sheet.set_str(self.cursor_row, self.cursor_col, text)
-        self._recompute_col_width(self.cursor_col)
+                    self.sheet.set_str(row, col, text)
 
     def _delete_visual_range(self) -> None:
         r1, c1, r2, c2 = self._visual_range()
@@ -283,7 +301,10 @@ class SpreadsheetApp(App):
         if verb == "q":
             return False
         elif verb == "wq":
-            path = parts[1] if len(parts) > 1 else (self.filename or "sheet.csv")
+            path = parts[1] if len(parts) > 1 else self.filename
+            if path is None:
+                self.status_message = "Sin archivo: usa :w <archivo.csv> primero"
+                return True
             self._save_csv(path)
             return False
         elif verb == "w":
@@ -419,4 +440,5 @@ class SpreadsheetApp(App):
             self.sheet.for_each(check)
         except Exception:
             pass
-        self.col_widths[col] = max(max_w + 2, 6)
+        current = self.col_widths.get(col, 10)
+        self.col_widths[col] = max(max_w + 2, 6, current)
