@@ -1,12 +1,9 @@
 import subprocess
 import sys
+import platform
+import shutil
 
-try:
-    import pybind11
-except ImportError:
-    print("Error: pybind11 no está instalado en el entorno.")
-    print("Prueba ejecutar: uv add pybind11")
-    sys.exit(1)
+import pybind11
 
 
 def run(cmd):
@@ -17,18 +14,27 @@ def run(cmd):
 python_exe = sys.executable
 pybind11_dir = pybind11.get_cmake_dir()
 
-run([
+cmd = [
     "cmake",
     "-S", ".",
     "-B", "build",
     f"-DPython_EXECUTABLE={python_exe}",
     f"-DPython3_EXECUTABLE={python_exe}",
     f"-Dpybind11_DIR={pybind11_dir}",
-])
+]
 
-run([
-    "cmake",
-    "--build", "build",
-])
+if platform.system() == "Windows":
+    gxx = shutil.which("g++")
+    if not gxx:
+        print("Error: no se encontró g++ en PATH.")
+        sys.exit(1)
+
+    cmd += [
+        "-G", "Ninja",
+        f"-DCMAKE_CXX_COMPILER={gxx}",
+    ]
+
+run(cmd)
+run(["cmake", "--build", "build"])
 
 print("Build exitoso.")
