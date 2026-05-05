@@ -7,4 +7,5 @@ dependencies = [
     "pybind11>=3.0.3",
     "cmake>=3.17",
     "textual>=0.60.0",
+    "ninja>=1.13.0",
 ]
