@@ -112,7 +112,7 @@ static CellValue eval_helper(const std::string& formula, const SparseMatrix& mat
     char op = 0;
     for (int i = 0; i < (int)expr.size(); i++) {
         char ch = expr[i];
-        if (ch == '+' or ch == '-' or ch == '*' or ch == '/') {
+        if (ch == '+' || ch == '-' || ch == '*' || ch == '/') {
             op_pos = i;
             op = ch;
             break;

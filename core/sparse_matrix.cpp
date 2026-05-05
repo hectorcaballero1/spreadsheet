@@ -5,12 +5,12 @@ SparseMatrix::~SparseMatrix() { clear(); }
 // Si la celda existe, retorna el puntero a la celda, otherwise retorna nullptr
 SparseMatrix::Cell* SparseMatrix::find_cell(int row, int col) const {
     RowHeader* curr_row = row_head;
-    while (curr_row != nullptr and curr_row->row != row) curr_row = curr_row->next;
+    while (curr_row != nullptr && curr_row->row != row) curr_row = curr_row->next;
 
     if (curr_row == nullptr) return nullptr;
 
     Cell* curr_cell = curr_row->first;
-    while (curr_cell != nullptr and curr_cell->col != col) curr_cell = curr_cell->right;
+    while (curr_cell != nullptr && curr_cell->col != col) curr_cell = curr_cell->right;
 
     if (curr_cell == nullptr) return nullptr;
 
@@ -22,12 +22,12 @@ SparseMatrix::RowHeader* SparseMatrix::find_or_create_row(int row) {
     RowHeader* curr_row = row_head;
     RowHeader* prev_row = nullptr;
 
-    while (curr_row != nullptr and curr_row->row < row) {
+    while (curr_row != nullptr && curr_row->row < row) {
         prev_row = curr_row;
         curr_row = curr_row->next;
     }
 
-    if (curr_row != nullptr and curr_row->row == row) return curr_row;
+    if (curr_row != nullptr && curr_row->row == row) return curr_row;
 
     RowHeader* new_row = new RowHeader(row);
     new_row->next = curr_row;
@@ -44,12 +44,12 @@ SparseMatrix::ColHeader* SparseMatrix::find_or_create_col(int col) {
     ColHeader* curr_col = col_head;
     ColHeader* prev_col = nullptr;
 
-    while (curr_col != nullptr and curr_col->col < col) {
+    while (curr_col != nullptr && curr_col->col < col) {
         prev_col = curr_col;
         curr_col = curr_col->next;
     }
 
-    if (curr_col != nullptr and curr_col->col == col) return curr_col;
+    if (curr_col != nullptr && curr_col->col == col) return curr_col;
 
     ColHeader* new_col = new ColHeader(col);
     new_col->next = curr_col;
@@ -66,7 +66,7 @@ void SparseMatrix::insert_cell_in_row(RowHeader* rh, Cell* cell) {
     Cell* curr_cell = rh->first;
     Cell* prev_cell = nullptr;
 
-    while (curr_cell != nullptr and curr_cell->col < cell->col) {
+    while (curr_cell != nullptr && curr_cell->col < cell->col) {
         prev_cell = curr_cell;
         curr_cell = curr_cell->right;
     }
@@ -83,7 +83,7 @@ void SparseMatrix::insert_cell_in_col(ColHeader* ch, Cell* cell) {
     Cell* curr_cell = ch->first;
     Cell* prev_cell = nullptr;
 
-    while (curr_cell != nullptr and curr_cell->row < cell->row) {
+    while (curr_cell != nullptr && curr_cell->row < cell->row) {
         prev_cell = curr_cell;
         curr_cell = curr_cell->down;
     }
@@ -115,10 +115,10 @@ void SparseMatrix::delete_cell_node(int row, int col) {
     if (cell == nullptr) return;
 
     RowHeader* curr_row = row_head;
-    while (curr_row != nullptr and curr_row->row != row) curr_row = curr_row->next;
+    while (curr_row != nullptr && curr_row->row != row) curr_row = curr_row->next;
 
     ColHeader* curr_col = col_head;
-    while (curr_col != nullptr and curr_col->col != col) curr_col = curr_col->next;
+    while (curr_col != nullptr && curr_col->col != col) curr_col = curr_col->next;
 
     remove_cell_from_row(curr_row, cell);
     remove_cell_from_col(curr_col, cell);
@@ -219,7 +219,7 @@ void SparseMatrix::clear_cell(int row, int col) {
 // Guarda un Action con todos los CellChange de la fila y elimina cada celda y el RowHeader
 void SparseMatrix::delete_row(int row) {
     RowHeader* curr_row = row_head;
-    while (curr_row != nullptr and curr_row->row != row) curr_row = curr_row->next;
+    while (curr_row != nullptr && curr_row->row != row) curr_row = curr_row->next;
     if (curr_row == nullptr) return;
 
     Action action;
@@ -234,7 +234,7 @@ void SparseMatrix::delete_row(int row) {
     while (curr_cell != nullptr) {
         Cell* next_cell = curr_cell->right;
         ColHeader* curr_col = col_head;
-        while (curr_col != nullptr and curr_col->col != curr_cell->col) curr_col = curr_col->next;
+        while (curr_col != nullptr && curr_col->col != curr_cell->col) curr_col = curr_col->next;
         remove_cell_from_col(curr_col, curr_cell);
         delete curr_cell;
         curr_cell = next_cell;
@@ -249,7 +249,7 @@ void SparseMatrix::delete_row(int row) {
 // Ídem para la columna col
 void SparseMatrix::delete_col(int col) {
     ColHeader* curr_col = col_head;
-    while (curr_col != nullptr and curr_col->col != col) curr_col = curr_col->next;
+    while (curr_col != nullptr && curr_col->col != col) curr_col = curr_col->next;
     if (curr_col == nullptr) return;
 
     Action action;
@@ -264,7 +264,7 @@ void SparseMatrix::delete_col(int col) {
     while (curr_cell != nullptr) {
         Cell* next_cell = curr_cell->down;
         RowHeader* curr_row = row_head;
-        while (curr_row != nullptr and curr_row->row != curr_cell->row) curr_row = curr_row->next;
+        while (curr_row != nullptr && curr_row->row != curr_cell->row) curr_row = curr_row->next;
         remove_cell_from_row(curr_row, curr_cell);
         delete curr_cell;
         curr_cell = next_cell;
@@ -296,8 +296,8 @@ void SparseMatrix::delete_range(int r1, int c1, int r2, int c2) {
 // Recorre la columna col y retorna el row del último nodo, o nullopt si la columna no existe
 std::optional<int> SparseMatrix::last_row_in_col(int col) const {
     ColHeader* curr_col = col_head;
-    while (curr_col != nullptr and curr_col->col != col) curr_col = curr_col->next;
-    if (curr_col == nullptr or curr_col->first == nullptr) return std::nullopt;
+    while (curr_col != nullptr && curr_col->col != col) curr_col = curr_col->next;
+    if (curr_col == nullptr || curr_col->first == nullptr) return std::nullopt;
 
     Cell* curr_cell = curr_col->first;
     while (curr_cell->down != nullptr) curr_cell = curr_cell->down;
