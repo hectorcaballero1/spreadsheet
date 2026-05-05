@@ -39,17 +39,17 @@ pybind11_add_module(spreadsheet
 )
 target_include_directories(spreadsheet PRIVATE core)
 
-# Dejar el módulo Python compilado en la raíz del proyecto,
-# para que main.py pueda hacer import spreadsheet directamente.
+# Dejar el módulo Python compilado en build/,
+# porque main.py agrega build/ al sys.path.
 set_target_properties(spreadsheet PROPERTIES
-    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}"
-    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}"
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
+    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
 )
 
 foreach(CONFIG_TYPE Debug Release RelWithDebInfo MinSizeRel)
     string(TOUPPER "${CONFIG_TYPE}" CONFIG_TYPE_UPPER)
     set_target_properties(spreadsheet PROPERTIES
-        RUNTIME_OUTPUT_DIRECTORY_${CONFIG_TYPE_UPPER} "${CMAKE_SOURCE_DIR}"
-        LIBRARY_OUTPUT_DIRECTORY_${CONFIG_TYPE_UPPER} "${CMAKE_SOURCE_DIR}"
+        RUNTIME_OUTPUT_DIRECTORY_${CONFIG_TYPE_UPPER} "${CMAKE_BINARY_DIR}"
+        LIBRARY_OUTPUT_DIRECTORY_${CONFIG_TYPE_UPPER} "${CMAKE_BINARY_DIR}"
     )
 endforeach()
