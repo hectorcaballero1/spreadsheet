@@ -2,12 +2,13 @@ import subprocess
 import sys
 import platform
 import shutil
+from pathlib import Path
 
 import pybind11
 
 
 def run(cmd):
-    print("+", " ".join(cmd))
+    print("+", " ".join(str(x) for x in cmd))
     subprocess.run(cmd, check=True)
 
 
@@ -23,10 +24,13 @@ cmd = [
     f"-Dpybind11_DIR={pybind11_dir}",
 ]
 
+gxx = None
+
 if platform.system() == "Windows":
     gxx = shutil.which("g++")
     if not gxx:
         print("Error: no se encontró g++ en PATH.")
+        print("Instala MSYS2/MinGW o asegúrate de que 'g++ --version' funcione.")
         sys.exit(1)
 
     cmd += [
@@ -37,8 +41,7 @@ if platform.system() == "Windows":
 run(cmd)
 run(["cmake", "--build", "build"])
 
-from pathlib import Path
-
+# En Windows con MinGW, el .pyd necesita estas DLLs al lado para poder importarse.
 if platform.system() == "Windows":
     compiler_dir = Path(gxx).parent
     build_dir = Path("build")
