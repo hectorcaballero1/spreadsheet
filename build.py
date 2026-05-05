@@ -37,4 +37,25 @@ if platform.system() == "Windows":
 run(cmd)
 run(["cmake", "--build", "build"])
 
+from pathlib import Path
+
+if platform.system() == "Windows":
+    compiler_dir = Path(gxx).parent
+    build_dir = Path("build")
+
+    runtime_dlls = [
+        "libstdc++-6.dll",
+        "libgcc_s_seh-1.dll",
+        "libgcc_s_sjlj-1.dll",
+        "libgcc_s_dw2-1.dll",
+        "libwinpthread-1.dll",
+    ]
+
+    for dll in runtime_dlls:
+        src = compiler_dir / dll
+        if src.exists():
+            dst = build_dir / dll
+            shutil.copy2(src, dst)
+            print(f"DLL copiada: {src} -> {dst}")
+
 print("Build exitoso.")

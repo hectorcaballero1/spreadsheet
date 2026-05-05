@@ -4,5 +4,6 @@ build/
 .venv
 *.so
 .cache/
-.pdb
-.pyb
+*.pdb
+*.pyd
+*.dll
